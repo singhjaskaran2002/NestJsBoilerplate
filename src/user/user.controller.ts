@@ -2,7 +2,6 @@ import {
 	Body,
 	Controller,
 	HttpStatus,
-	NotFoundException,
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
