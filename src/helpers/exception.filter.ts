@@ -18,15 +18,27 @@ export class HttpExceptionFilter implements ExceptionFilter {
 			JSON.stringify(exception.getResponse()),
 		);
 
-		exceptionCopy.message = exceptionCopy.message.map((item) => {
-			delete item.children;
-			return item;
-		});
+		if (typeof exceptionCopy.message !== 'string') {
+			exceptionCopy.message = exceptionCopy.message.map((item) => {
+				let obj: any = {};
+				obj = item;
+				let errorMessages: string[] = Object.keys(item.constraints).map(
+					(constraint) => {
+						return item.constraints[constraint];
+					},
+				);
+				delete obj.children;
+				delete obj.constraints;
+				obj.messages = errorMessages;
+				return obj;
+			});
+		}
 
 		response.status(status).json({
+			statusCode: exceptionCopy.statusCode,
+			path: request.url,
+			statusMessage: exceptionCopy.error,
 			messages: exceptionCopy.message,
-			error: exceptionCopy.error,
-			// path: request.url,
 		});
 	}
 }

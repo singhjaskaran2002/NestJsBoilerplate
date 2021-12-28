@@ -14,3 +14,19 @@ export const errorMessages = {
 	REGISTERATION_FAILED: 'User registration failed!',
 	USER_ALREADY_EXISTS: 'User already associated with this email.',
 };
+
+export const dtoFieldsDescription = {
+	USER_NAME: "User's name.",
+	USER_PASSWORD: "User's password.",
+	USER_EMAIL: "User's email.",
+};
+
+export const dtoFieldsError = {
+	INVALID_FIELD_STRING: 'Invalid @field string entered.',
+	INVALID_EMAIL: 'Invalid email entered.',
+};
+
+export const serverEnvironments = {
+	DEV: 'development',
+	PROD: 'production',
+};

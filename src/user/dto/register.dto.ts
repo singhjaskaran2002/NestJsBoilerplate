@@ -1,17 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEmpty, IsString } from 'class-validator';
+import { IsEmail, IsString } from 'class-validator';
+import { dtoFieldsDescription, dtoFieldsError } from '../../utils/constants';
 
 export class RegisterDto {
-	@ApiProperty({ description: "User's email", default: 'abc@example.com' })
-	@IsString({ message: 'Please enter valid email.' })
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_EMAIL,
+		default: 'abc@example.com',
+	})
 	@IsEmail({}, { message: 'Invalid Email' })
 	email: string;
 
-	@ApiProperty({ description: "User's password", default: '123456' })
-	@IsString({ message: 'Please enter valid password.' })
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_PASSWORD,
+		default: '123456',
+	})
+	@IsString({
+		message: dtoFieldsError.INVALID_FIELD_STRING.replace(
+			'@field',
+			'password',
+		),
+	})
 	password: string;
 
-    @ApiProperty({ description: "User's name", default: 'john deo' })
-	@IsString({ message: 'Please enter valid name.' })
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_NAME,
+		default: 'john deo',
+	})
+	@IsString({
+		message: dtoFieldsError.INVALID_FIELD_STRING.replace('@field', 'name'),
+	})
 	name: string;
 }
