@@ -1,11 +1,7 @@
-import {
-	BadRequestException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from './user.interface';
 
-const users: User[] = [
+let users: User[] = [
 	{
 		id: 1,
 		email: 'jaskaran@gmail.com',
@@ -19,11 +15,22 @@ export class UserService {
 	constructor() {}
 
 	// get user by email
-	async getUser(email: string, password: string): Promise<User> {
-		const user: User = users.filter((item) => item.email === email)[0];
-		if (user) {
-			if (user.password === password) return user;
-			else throw new BadRequestException('Invalid password');
-		} else throw new NotFoundException('User not found!');
+	async getUser(email: string): Promise<User> {
+		return users.filter((item: User) => item.email === email)[0];
+	}
+
+	// validate the user with email and password
+	async validateUser(email: string, password: string): Promise<User> {
+		const user = users.filter((item: User) => {
+			if (item.email === email && item.password === password) return item;
+		})[0];
+		if (!user) return null;
+		return user;
+	}
+
+	async createUser(userData: User): Promise<boolean | any> {
+		const id = users.length + 1;
+		users.push({ ...userData, id });
+		return true;
 	}
 }
