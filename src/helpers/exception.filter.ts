@@ -38,7 +38,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 			statusCode: exceptionCopy.statusCode,
 			path: request.url,
 			statusMessage: exceptionCopy.error,
-			messages: exceptionCopy.message,
+			errors: exceptionCopy.message,
 		});
 	}
 }

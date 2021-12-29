@@ -8,13 +8,18 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { messages, apiDescriptions, errorMessages } from '../utils/constants';
+import {
+	messages,
+	apiDescriptions,
+	errorMessages,
+	defaultExcludedAttributes,
+} from '../utils/constants';
 import { statusMessages } from '../utils/httpStatuses';
 import { createSuccessReponse } from '../utils/response.helper';
 import { Response } from '../utils/response.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { User } from './user.interface';
+import { User } from './model/user.entity';
 import { UserService } from './user.service';
 
 @ApiTags('User')
@@ -37,7 +42,7 @@ export class UserController {
 		const { email } = body;
 
 		// check if user exists in the database
-		const userData: User = await this.userService.getUser(email);
+		const userData: User = await this.userService.getUser({ email });
 		if (userData)
 			throw new BadRequestException(errorMessages.USER_ALREADY_EXISTS);
 
@@ -66,7 +71,12 @@ export class UserController {
 		const { email, password } = body;
 
 		// check if user exists in the database
-		const userData: User = await this.userService.getUser(email);
+		const userData: User = await this.userService.getUser(
+			{ email },
+			{
+				exclude: [...defaultExcludedAttributes, 'password'],
+			},
+		);
 		if (!userData)
 			throw new NotFoundException(errorMessages.USER_NOT_FOUND);
 		const isValidated = await this.userService.validateUser(
@@ -77,9 +87,6 @@ export class UserController {
 		// check if the credentials are valid
 		if (!isValidated)
 			throw new BadRequestException(errorMessages.INVALID_PASSWORD);
-		return createSuccessReponse(messages.LOGIN_SUCCESSFULLY, {
-			id: userData.id,
-			name: userData.name,
-		});
+		return createSuccessReponse(messages.LOGIN_SUCCESSFULLY, userData);
 	}
 }

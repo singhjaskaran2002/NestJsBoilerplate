@@ -31,3 +31,5 @@ export const serverEnvironments = {
 	PROD: 'production',
 	STAG: 'staging',
 };
+
+export const defaultExcludedAttributes = ['createdAt', 'updatedAt'];
