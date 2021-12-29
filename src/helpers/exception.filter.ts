@@ -18,7 +18,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 			JSON.stringify(exception.getResponse()),
 		);
 
-		if (typeof exceptionCopy.message !== 'string') {
+		if (Array.isArray(exceptionCopy.message)) {
 			exceptionCopy.message = exceptionCopy.message.map((item) => {
 				let obj: any = {};
 				obj = item;

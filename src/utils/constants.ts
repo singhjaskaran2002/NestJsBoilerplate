@@ -29,4 +29,5 @@ export const dtoFieldsError = {
 export const serverEnvironments = {
 	DEV: 'development',
 	PROD: 'production',
+	STAG: 'staging',
 };
