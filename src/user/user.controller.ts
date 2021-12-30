@@ -35,6 +35,8 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../common/models/user.entity';
 import { UserService } from './user.service';
+import { Op } from 'sequelize';
+
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
 }
@@ -62,9 +64,15 @@ export class UserController {
 		const { email } = body;
 
 		// check if user exists in the database
-		const userData: User = await this.userService.getUser({ email });
+		const userData: User = await this.userService.getUser({
+			email,
+			deletedAt: null,
+		});
 		if (userData)
 			throw new BadRequestException(errorMessages.USER_ALREADY_EXISTS);
+
+		// delete old records in case of having same email
+		await this.userService.destroyRecord({ email });
 
 		// create user with provided data
 		body.password = await encryptPassword(body.password);
@@ -92,7 +100,10 @@ export class UserController {
 		const { email, password } = body;
 
 		// check if user exists in the database
-		const userData: User = await this.userService.getUser({ email });
+		const userData: User = await this.userService.getUser({
+			email,
+			deletedAt: null,
+		});
 
 		if (!userData)
 			throw new NotFoundException(errorMessages.USER_NOT_FOUND);
