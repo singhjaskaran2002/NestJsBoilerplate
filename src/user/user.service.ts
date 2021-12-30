@@ -35,4 +35,14 @@ export class UserService {
 	async createUser(userData: RegisterDto): Promise<boolean | any> {
 		return this.userModel.create(userData);
 	}
+
+	// remove user from database
+	async removeUser(criteria: WhereOptions): Promise<any> {
+		return await this.userModel.destroy({ where: criteria });
+	}
+
+	// destroy record from database
+	async destroyRecord(criteria: WhereOptions): Promise<any> {
+		return await this.userModel.destroy({ where: criteria, force: true });
+	}
 }
