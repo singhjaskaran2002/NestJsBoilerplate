@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { dtoFieldsDescription, dtoFieldsError } from '../../utils/constants';
+import {
+	dtoFieldsDescription,
+	dtoFieldsError,
+} from '../../common/utils/constants';
 
 export class UpdateUserDto {
 	@ApiProperty({

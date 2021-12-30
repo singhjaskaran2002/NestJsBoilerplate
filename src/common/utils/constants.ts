@@ -1,7 +1,8 @@
 export const messages = {
 	SUCCESS: 'Success.',
 	LOGIN_SUCCESSFULLY: 'Logged in successfully.',
-	REGISTER_SUCCESSFULLY: 'Registered successfully.',
+	REGISTER_SUCCESSFULLY:
+		'You have been registered successfully. Welcome mail has been sent to your email address.',
 	PROFILE_UPDATED_SUCCESSFULLY: 'Profile updated successfully.',
 };
 

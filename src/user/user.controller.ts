@@ -34,9 +34,14 @@ import { createSuccessReponse } from '../common/helpers/response.helper';
 import { Response } from '../common/intefaces/response.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { User } from '../common/models/user.entity';
+import { User } from '../models/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { EmailHandlerService } from 'src/email-handler/email-handler.service';
+import {
+	mailSubjects,
+	mailTypes,
+} from 'src/email-handler/templatesIndex';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
@@ -48,6 +53,7 @@ export class UserController {
 	constructor(
 		private readonly userService: UserService,
 		private readonly jwtService: JwtConfigService,
+		private readonly emailService: EmailHandlerService,
 	) {}
 
 	@Post('register')
@@ -80,6 +86,15 @@ export class UserController {
 		const isRegistered = await this.userService.createUser(body);
 		if (!isRegistered)
 			throw new BadRequestException(errorMessages.REGISTERATION_FAILED);
+
+		// send welcome mail
+		this.emailService.sendMail(
+			mailTypes.welcome_mail,
+			mailSubjects.welcome_mail,
+			email,
+			{ username: body.name },
+		);
+
 		return createSuccessReponse(messages.REGISTER_SUCCESSFULLY);
 	}
 

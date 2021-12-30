@@ -4,7 +4,7 @@ import { FindAttributeOptions, WhereOptions } from 'sequelize/types';
 import { checkHash } from '../common/helpers/bcrypt.helper';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '../common/models/user.entity';
+import { User } from '../models/user.entity';
 
 @Injectable()
 export class UserService {

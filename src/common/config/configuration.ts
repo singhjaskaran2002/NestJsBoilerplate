@@ -13,4 +13,17 @@ export default () => ({
 			algorithm: process.env.JWT_ALGORITHM,
 		},
 	},
+	mailerOptions: {
+		transport: {
+			host: process.env.MAIL_HOST,
+			secure: false,
+			auth: {
+				user: process.env.MAIL_USER,
+				pass: process.env.MAIL_PASS,
+			},
+		},
+		defaults: {
+			from: process.env.MAIL_FROM,
+		},
+	},
 });
