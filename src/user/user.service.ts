@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindAttributeOptions, WhereOptions } from 'sequelize/types';
-import { checkHash } from 'src/utils/bcrypt.helper';
+import { checkHash } from '../helpers/bcrypt.helper';
 import { RegisterDto } from './dto/register.dto';
 import { User } from './model/user.entity';
 

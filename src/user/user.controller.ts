@@ -22,16 +22,15 @@ import { Role } from 'src/utils/roles/roles.enum';
 import { RolesGuard } from 'src/utils/roles/roles.guard';
 import { JwtConfigService } from '../jwt-config/jwt-config.service';
 import { AuthGuard } from '../utils/auth.guard';
-import { checkHash, encryptPassword } from '../utils/bcrypt.helper';
+import { checkHash, encryptPassword } from '../helpers/bcrypt.helper';
 import {
 	messages,
 	apiDescriptions,
 	errorMessages,
-	defaultExcludedAttributes,
 } from '../utils/constants';
 import { statusMessages } from '../utils/httpStatuses';
-import { createSuccessReponse } from '../utils/response.helper';
-import { Response } from '../utils/response.interface';
+import { createSuccessReponse } from '../helpers/response.helper';
+import { Response } from '../intefaces/response.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from './model/user.entity';
