@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindAttributeOptions, WhereOptions } from 'sequelize/types';
-import { checkHash } from '../helpers/bcrypt.helper';
+import { checkHash } from '../common/helpers/bcrypt.helper';
 import { RegisterDto } from './dto/register.dto';
-import { User } from './model/user.entity';
+import { User } from '../common/models/user.entity';
 
 @Injectable()
 export class UserService {

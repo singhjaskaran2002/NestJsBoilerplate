@@ -17,23 +17,23 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import { Roles } from 'src/utils/roles/roles.decorator';
-import { Role } from 'src/utils/roles/roles.enum';
-import { RolesGuard } from 'src/utils/roles/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from 'src/common/enums/roles.enum';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { JwtConfigService } from '../jwt-config/jwt-config.service';
-import { AuthGuard } from '../utils/auth.guard';
-import { checkHash, encryptPassword } from '../helpers/bcrypt.helper';
+import { AuthGuard } from '../auth/auth.guard';
+import { checkHash, encryptPassword } from '../common/helpers/bcrypt.helper';
 import {
 	messages,
 	apiDescriptions,
 	errorMessages,
-} from '../utils/constants';
-import { statusMessages } from '../utils/httpStatuses';
-import { createSuccessReponse } from '../helpers/response.helper';
-import { Response } from '../intefaces/response.interface';
+} from '../common/utils/constants';
+import { statusMessages } from '../common/utils/httpStatuses';
+import { createSuccessReponse } from '../common/helpers/response.helper';
+import { Response } from '../common/intefaces/response.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { User } from './model/user.entity';
+import { User } from '../common/models/user.entity';
 import { UserService } from './user.service';
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
