@@ -2,12 +2,14 @@ export const messages = {
 	SUCCESS: 'Success.',
 	LOGIN_SUCCESSFULLY: 'Logged in successfully.',
 	REGISTER_SUCCESSFULLY: 'Registered successfully.',
+	PROFILE_UPDATED_SUCCESSFULLY: 'Profile updated successfully.',
 };
 
 export const apiDescriptions = {
 	LOGIN_API: 'Route for logging into the system.',
 	REGISTER_API: 'Route for registering into the system.',
 	PROFILE_API: "Route for fetching logged user's profile from the system.",
+	UPDATE_USER_API: "Route for updating user's profile.",
 };
 
 export const errorMessages = {
