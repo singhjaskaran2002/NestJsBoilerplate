@@ -6,9 +6,9 @@ import {
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './helpers/exception.filter';
+import { HttpExceptionFilter } from './common/filters/exception.filter';
 import { UserModule } from './user/user.module';
-import { serverEnvironments } from './utils/constants';
+import { serverEnvironments } from './common/utils/constants';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
