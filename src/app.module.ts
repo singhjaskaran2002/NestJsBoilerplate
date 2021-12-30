@@ -5,12 +5,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { UserModule } from './user/user.module';
+import { JwtConfigModule } from './jwt-config/jwt-config.module';
 
 @Module({
 	imports: [
 		UserModule,
 		ConfigModule.forRoot({
-			load: [configuration]
+			load: [configuration],
 		}),
 		SequelizeModule.forRootAsync({
 			imports: [ConfigModule],
@@ -19,10 +20,11 @@ import { UserModule } from './user/user.module';
 				sync: {
 					alter: true,
 				},
-				autoLoadModels: true
+				autoLoadModels: true,
 			}),
 			inject: [ConfigService],
 		}),
+		JwtConfigModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

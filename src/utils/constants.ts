@@ -1,4 +1,5 @@
 export const messages = {
+	SUCCESS: 'Success.',
 	LOGIN_SUCCESSFULLY: 'Logged in successfully.',
 	REGISTER_SUCCESSFULLY: 'Registered successfully.',
 };
@@ -6,6 +7,7 @@ export const messages = {
 export const apiDescriptions = {
 	LOGIN_API: 'Route for logging into the system.',
 	REGISTER_API: 'Route for registering into the system.',
+	PROFILE_API: "Route for fetching logged user's profile from the system.",
 };
 
 export const errorMessages = {
@@ -13,6 +15,7 @@ export const errorMessages = {
 	INVALID_PASSWORD: 'Invalid password.',
 	REGISTERATION_FAILED: 'User registration failed!',
 	USER_ALREADY_EXISTS: 'User already associated with this email.',
+	JWT_TOKEN_ERROR: 'Token has been expired.',
 };
 
 export const dtoFieldsDescription = {
@@ -32,4 +35,8 @@ export const serverEnvironments = {
 	STAG: 'staging',
 };
 
-export const defaultExcludedAttributes = ['createdAt', 'updatedAt'];
+export const defaultExcludedAttributes = [
+	'createdAt',
+	'updatedAt',
+	'deletedAt',
+];

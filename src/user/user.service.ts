@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindAttributeOptions, WhereOptions } from 'sequelize/types';
+import { checkHash } from 'src/utils/bcrypt.helper';
 import { RegisterDto } from './dto/register.dto';
 import { User } from './model/user.entity';
 
@@ -20,11 +21,14 @@ export class UserService {
 	}
 
 	// validate the user with email and password
-	async validateUser(email: string, password: string): Promise<User> {
-		return await this.userModel.findOne({
-			where: { email, password },
-			attributes: { exclude: ['password'] },
+	async validateUser(email: string, password: string): Promise<boolean> {
+		const userData = await this.userModel.findOne({
+			where: { email },
 		});
+		if (await checkHash(password, userData.password)) {
+			return true;
+		}
+		return false;
 	}
 
 	// create user service method
