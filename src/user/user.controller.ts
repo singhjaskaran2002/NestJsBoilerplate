@@ -7,6 +7,7 @@ import {
 	HttpStatus,
 	NotFoundException,
 	Post,
+	Put,
 	Req,
 	UseGuards,
 } from '@nestjs/common';
@@ -35,7 +36,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../common/models/user.entity';
 import { UserService } from './user.service';
-import { Op } from 'sequelize';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
@@ -136,7 +137,40 @@ export class UserController {
 		status: HttpStatus.BAD_REQUEST,
 		description: statusMessages[HttpStatus.BAD_REQUEST],
 	})
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: statusMessages[HttpStatus.FORBIDDEN],
+	})
 	async profile(@Req() req: IGetUserAuthInfoRequest): Promise<Response> {
 		return createSuccessReponse(messages.SUCCESS, req.user);
+	}
+
+	@ApiSecurity('bearer')
+	@Roles(Role.User)
+	@UseGuards(AuthGuard, RolesGuard)
+	@Put('update')
+	@ApiOperation({ description: apiDescriptions.UPDATE_USER_API })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: statusMessages[HttpStatus.OK],
+	})
+	@ApiResponse({
+		status: HttpStatus.NOT_FOUND,
+		description: statusMessages[HttpStatus.NOT_FOUND],
+	})
+	@ApiResponse({
+		status: HttpStatus.BAD_REQUEST,
+		description: statusMessages[HttpStatus.BAD_REQUEST],
+	})
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: statusMessages[HttpStatus.FORBIDDEN],
+	})
+	async updateProfile(
+		@Body() body: UpdateUserDto,
+		@Req() req: IGetUserAuthInfoRequest,
+	): Promise<Response> {
+		await this.userService.updateUser({ id: req.user.id }, body);
+		return createSuccessReponse(messages.PROFILE_UPDATED_SUCCESSFULLY);
 	}
 }

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { FindAttributeOptions, WhereOptions } from 'sequelize/types';
 import { checkHash } from '../common/helpers/bcrypt.helper';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '../common/models/user.entity';
 
 @Injectable()
@@ -34,6 +35,14 @@ export class UserService {
 	// create user service method
 	async createUser(userData: RegisterDto): Promise<boolean | any> {
 		return this.userModel.create(userData);
+	}
+
+	// update user service method
+	async updateUser(
+		criteria: WhereOptions,
+		newData: UpdateUserDto,
+	): Promise<boolean | any> {
+		return this.userModel.update(newData, { where: criteria });
 	}
 
 	// remove user from database
