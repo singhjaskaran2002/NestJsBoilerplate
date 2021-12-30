@@ -10,6 +10,7 @@ import {
 	Put,
 	Req,
 	UseGuards,
+	UseInterceptors,
 } from '@nestjs/common';
 import {
 	ApiOperation,
@@ -38,16 +39,16 @@ import { User } from '../models/user.entity';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailHandlerService } from 'src/email-handler/email-handler.service';
-import {
-	mailSubjects,
-	mailTypes,
-} from 'src/email-handler/templatesIndex';
+import { mailSubjects, mailTypes } from 'src/email-handler/templatesIndex';
+import { ChangePasswordDto } from './dto/changePassword.dto';
+import { LoggingInterceptor } from 'src/common/interceptor/logging.interceptor';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
 }
 
 @ApiTags('User')
+@UseInterceptors(LoggingInterceptor)
 @Controller('user')
 export class UserController {
 	constructor(
@@ -92,7 +93,11 @@ export class UserController {
 			mailTypes.welcome_mail,
 			mailSubjects.welcome_mail,
 			email,
-			{ username: body.name },
+			{
+				username: body.name,
+				welcome_logo:
+					'https://mpng.subpng.com/20190320/xyo/kisspng-welcome-image-logo-portable-network-graphics-text-country-time-accueil-5c92636a4c2dc5.468162921553097578312.jpg',
+			},
 		);
 
 		return createSuccessReponse(messages.REGISTER_SUCCESSFULLY);
@@ -187,5 +192,58 @@ export class UserController {
 	): Promise<Response> {
 		await this.userService.updateUser({ id: req.user.id }, body);
 		return createSuccessReponse(messages.PROFILE_UPDATED_SUCCESSFULLY);
+	}
+
+	@ApiSecurity('bearer')
+	@Roles(Role.User)
+	@UseGuards(AuthGuard, RolesGuard)
+	@Put('change-password')
+	@ApiOperation({ description: apiDescriptions.CHANGE_PASSWORD_API })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: statusMessages[HttpStatus.OK],
+	})
+	@ApiResponse({
+		status: HttpStatus.BAD_REQUEST,
+		description: statusMessages[HttpStatus.BAD_REQUEST],
+	})
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: statusMessages[HttpStatus.FORBIDDEN],
+	})
+	async changeProfile(
+		@Body() body: ChangePasswordDto,
+		@Req() req: IGetUserAuthInfoRequest,
+	): Promise<Response> {
+		// password and newPassword from body.
+		const { password, newPassword } = body;
+
+		// E-mail info from user context.
+		const { id } = req.user;
+		const user = await this.userService.getUser({ id }, ['password']);
+
+		// Fetch users Old Password.
+		const { password: oldPassword } = user;
+
+		// Authenticate User.
+		if (!(await checkHash(password, oldPassword))) {
+			throw new BadRequestException(
+				errorMessages.OLD_PASSWORD_NOT_MATCHED,
+			);
+		}
+
+		// Hash the password.
+		const hashedPassword = await encryptPassword(newPassword);
+
+		// check if entered passwords are same.
+		if (await checkHash(newPassword, oldPassword)) {
+			throw new BadRequestException(
+				errorMessages.SAME_OLD_AND_NEW_PASSWORD,
+			);
+		}
+
+		// Finally update password. if all conditions passed.
+		await this.userService.updateUser({ id }, { password: hashedPassword });
+		return createSuccessReponse(messages.SUCCESS);
 	}
 }

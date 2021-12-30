@@ -36,13 +36,15 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mysql2": "^2.3.3",
+    "nest-winston": "^1.6.2",
     "nodemailer": "^6.7.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "sequelize": "^6.12.4",
     "sequelize-typescript": "^2.1.1",
-    "swagger-ui-express": "^4.3.0"
+    "swagger-ui-express": "^4.3.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

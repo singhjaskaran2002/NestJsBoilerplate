@@ -40,7 +40,7 @@ export class UserService {
 	// update user service method
 	async updateUser(
 		criteria: WhereOptions,
-		newData: UpdateUserDto,
+		newData: any,
 	): Promise<boolean | any> {
 		return this.userModel.update(newData, { where: criteria });
 	}

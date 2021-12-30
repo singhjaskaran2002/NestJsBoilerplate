@@ -13,6 +13,7 @@ export default () => ({
 			algorithm: process.env.JWT_ALGORITHM,
 		},
 	},
+	enableLogs: process.env.ENABLE_LOGS ?? false,
 	mailerOptions: {
 		transport: {
 			host: process.env.MAIL_HOST,

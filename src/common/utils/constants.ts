@@ -4,6 +4,7 @@ export const messages = {
 	REGISTER_SUCCESSFULLY:
 		'You have been registered successfully. Welcome mail has been sent to your email address.',
 	PROFILE_UPDATED_SUCCESSFULLY: 'Profile updated successfully.',
+	PASSWORD_CHANGED_SUCCESSFULLY: 'Password changed successfully.',
 };
 
 export const apiDescriptions = {
@@ -11,6 +12,7 @@ export const apiDescriptions = {
 	REGISTER_API: 'Route for registering into the system.',
 	PROFILE_API: "Route for fetching logged user's profile from the system.",
 	UPDATE_USER_API: "Route for updating user's profile.",
+	CHANGE_PASSWORD_API: "Route for changing user's password.",
 };
 
 export const errorMessages = {
@@ -19,6 +21,8 @@ export const errorMessages = {
 	REGISTERATION_FAILED: 'User registration failed!',
 	USER_ALREADY_EXISTS: 'User already associated with this email.',
 	JWT_TOKEN_ERROR: 'Token has been expired.',
+	OLD_PASSWORD_NOT_MATCHED: 'Old password mismatched.',
+	SAME_OLD_AND_NEW_PASSWORD: 'Choose different password from old one.',
 };
 
 export const dtoFieldsDescription = {
