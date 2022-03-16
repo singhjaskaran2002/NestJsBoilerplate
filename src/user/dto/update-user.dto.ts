@@ -13,5 +13,7 @@ export class UpdateUserDto {
 	@IsString({
 		message: dtoFieldsError.INVALID_FIELD_STRING.replace('@field', 'name'),
 	})
-	name: string;
+	name?: string;
+
+	password?: string;
 }

@@ -33,16 +33,16 @@ export class UserService {
 	}
 
 	// create user service method
-	async createUser(userData: RegisterDto): Promise<boolean | any> {
+	async createUser(userData: RegisterDto): Promise<User> {
 		return this.userModel.create(userData);
 	}
 
 	// update user service method
 	async updateUser(
 		criteria: WhereOptions,
-		newData: any,
+		updatedData: UpdateUserDto,
 	): Promise<boolean | any> {
-		return this.userModel.update(newData, { where: criteria });
+		return this.userModel.update(updatedData, { where: criteria });
 	}
 
 	// remove user from database

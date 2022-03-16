@@ -29,16 +29,16 @@ async function bootstrap() {
 	// serves swagger if environment is development
 	if (process.env.NODE_ENV === serverEnvironments.DEV) {
 		const config = new DocumentBuilder()
-			.setTitle('Sample API')
+			.setTitle('Nest BoilerPlate')
 			.setVersion('1.0')
 			.addBearerAuth()
 			.build();
 		const document = SwaggerModule.createDocument(app, config, {
 			include: [UserModule],
 		});
-		SwaggerModule.setup('api-docs', app, document);
+		SwaggerModule.setup(process.env.DEFAULT_SWAGGER_ROUTE, app, document);
 	}
 
-	await app.listen(3000);
+	await app.listen(+process.env.SERVER_PORT);
 }
 bootstrap();

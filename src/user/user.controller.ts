@@ -29,6 +29,7 @@ import {
 	messages,
 	apiDescriptions,
 	errorMessages,
+	apiSecurities,
 } from '../common/utils/constants';
 import { statusMessages } from '../common/utils/httpStatuses';
 import { createSuccessReponse } from '../common/helpers/response.helper';
@@ -40,8 +41,8 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailHandlerService } from 'src/email-handler/email-handler.service';
 import { mailSubjects, mailTypes } from 'src/email-handler/templatesIndex';
-import { ChangePasswordDto } from './dto/changePassword.dto';
 import { LoggingInterceptor } from 'src/common/interceptor/logging.interceptor';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
@@ -140,7 +141,7 @@ export class UserController {
 		});
 	}
 
-	@ApiSecurity('bearer')
+	@ApiSecurity(apiSecurities.BEARER)
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
 	@Get('profile')
@@ -165,7 +166,7 @@ export class UserController {
 		return createSuccessReponse(messages.SUCCESS, req.user);
 	}
 
-	@ApiSecurity('bearer')
+	@ApiSecurity(apiSecurities.BEARER)
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
 	@Put('update')
@@ -194,7 +195,7 @@ export class UserController {
 		return createSuccessReponse(messages.PROFILE_UPDATED_SUCCESSFULLY);
 	}
 
-	@ApiSecurity('bearer')
+	@ApiSecurity(apiSecurities.BEARER)
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
 	@Put('change-password')
@@ -212,23 +213,20 @@ export class UserController {
 		description: statusMessages[HttpStatus.FORBIDDEN],
 	})
 	async changeProfile(
-		@Body() body: ChangePasswordDto,
+		@Body() body: UpdatePasswordDto,
 		@Req() req: IGetUserAuthInfoRequest,
 	): Promise<Response> {
 		// password and newPassword from body.
-		const { password, newPassword } = body;
+		const { currentPassword, newPassword } = body;
 
 		// E-mail info from user context.
 		const { id } = req.user;
 		const user = await this.userService.getUser({ id }, ['password']);
 
-		// Fetch users Old Password.
-		const { password: oldPassword } = user;
-
 		// Authenticate User.
-		if (!(await checkHash(password, oldPassword))) {
+		if (!(await checkHash(currentPassword, user.password))) {
 			throw new BadRequestException(
-				errorMessages.OLD_PASSWORD_NOT_MATCHED,
+				errorMessages.CURRENT_PASSWORD_MISMATCHED,
 			);
 		}
 
@@ -236,10 +234,8 @@ export class UserController {
 		const hashedPassword = await encryptPassword(newPassword);
 
 		// check if entered passwords are same.
-		if (await checkHash(newPassword, oldPassword)) {
-			throw new BadRequestException(
-				errorMessages.SAME_OLD_AND_NEW_PASSWORD,
-			);
+		if (await checkHash(newPassword, user.password)) {
+			throw new BadRequestException(errorMessages.SAME_PASSWORD);
 		}
 
 		// Finally update password. if all conditions passed.

@@ -1,6 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
-import { dtoFieldsDescription, dtoFieldsError } from '../../common/utils/constants';
+import {
+	IsEmail,
+	IsString,
+	Matches,
+	MaxLength,
+	MinLength,
+} from 'class-validator';
+import {
+	dtoFieldsDescription,
+	dtoFieldsError,
+	errorMessages,
+} from '../../common/utils/constants';
 
 export class RegisterDto {
 	@ApiProperty({
@@ -19,6 +29,13 @@ export class RegisterDto {
 			'@field',
 			'password',
 		),
+	})
+	@MinLength(8, { message: errorMessages.MIN_PASSWORD_ERROR })
+	@MaxLength(20, {
+		message: errorMessages.MAX_PASSWORD_ERROR,
+	})
+	@Matches(/^\S*$/, {
+		message: errorMessages.WHITESPACE_PASSWORD_ERROR,
 	})
 	password: string;
 
