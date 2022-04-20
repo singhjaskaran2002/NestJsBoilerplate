@@ -75,7 +75,7 @@ export class UserController {
 		// check if user exists in the database
 		const userData: User = await this.userService.getUser({
 			email,
-			deletedAt: null,
+			deleted_at: null,
 		});
 		if (userData)
 			throw new BadRequestException(errorMessages.USER_ALREADY_EXISTS);
@@ -124,7 +124,7 @@ export class UserController {
 		// check if user exists in the database
 		const userData: User = await this.userService.getUser({
 			email,
-			deletedAt: null,
+			deleted_at: null,
 		});
 
 		if (!userData)

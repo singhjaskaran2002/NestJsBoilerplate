@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
 		}
 
 		const data = await this.userService.getUser(
-			{ id: tokenData.userId, deletedAt: null },
+			{ id: tokenData.userId, deleted_at: null },
 			{ exclude: ['password', ...defaultExcludedAttributes] },
 		);
 

@@ -23,8 +23,8 @@ export const errorMessages = {
 	JWT_TOKEN_EXPIRED: 'Token has been expired.',
 	CURRENT_PASSWORD_MISMATCHED: 'Current password mismatched.',
 	SAME_PASSWORD: 'Choose different password from current one.',
-	MIN_PASSWORD_ERROR: 'Password must not be smaller than 8 characters',
-	MAX_PASSWORD_ERROR: 'Password must not be greater than 20 characters',
+	MIN_PASSWORD_ERROR: 'Password must be of atleast 8 characters',
+	MAX_PASSWORD_ERROR: 'Password must not be greater than 30 characters',
 	WHITESPACE_PASSWORD_ERROR:
 		'Please enter a password with no whitespace characters',
 };
@@ -53,7 +53,11 @@ export const apiSecurities = {
 };
 
 export const defaultExcludedAttributes = [
-	'createdAt',
-	'updatedAt',
-	'deletedAt',
+	'created_at',
+	'updated_at',
+	'deleted_at',
 ];
+
+export const roles = {
+	USER: 'user',
+};
