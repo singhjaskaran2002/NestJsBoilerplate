@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
 		let tokenData = this.jwtConfigService.decryptJWT(accessToken);
 
 		if (!tokenData) {
-			throw new BadRequestException(errorMessages.JWT_TOKEN_ERROR);
+			throw new BadRequestException(errorMessages.JWT_TOKEN_EXPIRED);
 		}
 
 		const data = await this.userService.getUser(

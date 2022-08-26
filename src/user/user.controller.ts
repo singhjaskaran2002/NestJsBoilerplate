@@ -29,6 +29,7 @@ import {
 	messages,
 	apiDescriptions,
 	errorMessages,
+	apiSecurities,
 } from '../common/utils/constants';
 import { statusMessages } from '../common/utils/httpStatuses';
 import { createSuccessReponse } from '../common/helpers/response.helper';
@@ -40,12 +41,12 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { EmailHandlerService } from 'src/email-handler/email-handler.service';
 import { mailSubjects, mailTypes } from 'src/email-handler/templatesIndex';
-import { ChangePasswordDto } from './dto/changePassword.dto';
 import { LoggingInterceptor } from 'src/common/interceptor/logging.interceptor';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fetchImageUrl } from 'src/common/utils/fetchImageUrl';
 import { IUser } from 'src/common/intefaces/user.interface';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
@@ -95,7 +96,7 @@ export class UserController {
 		// check if user exists in the database
 		const userData: User = await this.userService.getUser({
 			email,
-			deletedAt: null,
+			deleted_at: null,
 		});
 		if (userData)
 			throw new BadRequestException(errorMessages.USER_ALREADY_EXISTS);
@@ -145,7 +146,7 @@ export class UserController {
 		// check if user exists in the database
 		const userData: User = await this.userService.getUser({
 			email,
-			deletedAt: null,
+			deleted_at: null,
 		});
 
 		if (!userData)
@@ -166,6 +167,7 @@ export class UserController {
 	 * get profile
 	 */
 	@ApiSecurity('bearer')
+	@ApiSecurity(apiSecurities.BEARER)
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
 	@Get('')
@@ -199,6 +201,8 @@ export class UserController {
 	 * Update profile
 	 */
 	@ApiSecurity('bearer')
+
+	@ApiSecurity(apiSecurities.BEARER)
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
 	@Put('')
@@ -245,6 +249,7 @@ export class UserController {
 	 * Change password endpoint
 	 */
 	@ApiSecurity('bearer')
+	@ApiSecurity(apiSecurities.BEARER)
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
 	@Put('change-password')
@@ -262,23 +267,20 @@ export class UserController {
 		description: statusMessages[HttpStatus.FORBIDDEN],
 	})
 	async changeProfile(
-		@Body() body: ChangePasswordDto,
+		@Body() body: UpdatePasswordDto,
 		@Req() req: IGetUserAuthInfoRequest,
 	): Promise<IResponse<IUser>> {
 		// password and newPassword from body.
-		const { password, newPassword } = body;
+		const { currentPassword, newPassword } = body;
 
 		// E-mail info from user context.
 		const { id } = req.user;
 		const user = await this.userService.getUser({ id }, ['password']);
 
-		// Fetch users Old Password.
-		const { password: oldPassword } = user;
-
 		// Authenticate User.
-		if (!(await checkHash(password, oldPassword))) {
+		if (!(await checkHash(currentPassword, user.password))) {
 			throw new BadRequestException(
-				errorMessages.OLD_PASSWORD_NOT_MATCHED,
+				errorMessages.CURRENT_PASSWORD_MISMATCHED,
 			);
 		}
 
@@ -286,10 +288,8 @@ export class UserController {
 		const hashedPassword = await encryptPassword(newPassword);
 
 		// check if entered passwords are same.
-		if (await checkHash(newPassword, oldPassword)) {
-			throw new BadRequestException(
-				errorMessages.SAME_OLD_AND_NEW_PASSWORD,
-			);
+		if (await checkHash(newPassword, user.password)) {
+			throw new BadRequestException(errorMessages.SAME_PASSWORD);
 		}
 
 		// Finally update password. if all conditions passed.

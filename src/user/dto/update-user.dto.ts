@@ -23,4 +23,5 @@ export class UpdateUserDto {
 		readOnly: true,
 	})
 	profilePicture?: string;
+	password?: string;
 }

@@ -6,14 +6,15 @@ import {
 	Index,
 	AllowNull,
 } from 'sequelize-typescript';
+import { roles } from 'src/common/utils/constants';
 
 @Table({
 	timestamps: true,
-	tableName: 'Users',
+	tableName: 'users',
 	paranoid: true,
-	createdAt: 'createdAt',
-	updatedAt: 'updatedAt',
-	deletedAt: 'deletedAt',
+	createdAt: 'created_at',
+	updatedAt: 'updated_at',
+	deletedAt: 'deleted_at',
 })
 export class User extends Model {
 	@Index('email_idx')
@@ -35,6 +36,6 @@ export class User extends Model {
 	@Column
 	username: string;
 
-	@Column({ defaultValue: 'user' })
+	@Column({ defaultValue: roles.USER })
 	role: string;
 }

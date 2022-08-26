@@ -20,9 +20,13 @@ export const errorMessages = {
 	INVALID_PASSWORD: 'Invalid password.',
 	REGISTERATION_FAILED: 'User registration failed!',
 	USER_ALREADY_EXISTS: 'User already associated with this email.',
-	JWT_TOKEN_ERROR: 'Token has been expired.',
-	OLD_PASSWORD_NOT_MATCHED: 'Old password mismatched.',
-	SAME_OLD_AND_NEW_PASSWORD: 'Choose different password from old one.',
+	JWT_TOKEN_EXPIRED: 'Token has been expired.',
+	CURRENT_PASSWORD_MISMATCHED: 'Current password mismatched.',
+	SAME_PASSWORD: 'Choose different password from current one.',
+	MIN_PASSWORD_ERROR: 'Password must be of atleast 8 characters',
+	MAX_PASSWORD_ERROR: 'Password must not be greater than 30 characters',
+	WHITESPACE_PASSWORD_ERROR:
+		'Please enter a password with no whitespace characters',
 };
 
 export const dtoFieldsDescription = {
@@ -44,8 +48,16 @@ export const serverEnvironments = {
 	STAG: 'staging',
 };
 
+export const apiSecurities = {
+	BEARER: 'bearer',
+};
+
 export const defaultExcludedAttributes = [
-	'createdAt',
-	'updatedAt',
-	'deletedAt',
+	'created_at',
+	'updated_at',
+	'deleted_at',
 ];
+
+export const roles = {
+	USER: 'user',
+};
