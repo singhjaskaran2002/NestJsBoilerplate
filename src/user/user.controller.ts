@@ -32,7 +32,7 @@ import {
 } from '../common/utils/constants';
 import { statusMessages } from '../common/utils/httpStatuses';
 import { createSuccessReponse } from '../common/helpers/response.helper';
-import { Response } from '../common/intefaces/response.interface';
+import { IResponse } from '../common/intefaces/response.interface';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../models/user.entity';
@@ -42,6 +42,10 @@ import { EmailHandlerService } from 'src/email-handler/email-handler.service';
 import { mailSubjects, mailTypes } from 'src/email-handler/templatesIndex';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { LoggingInterceptor } from 'src/common/interceptor/logging.interceptor';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { fetchImageUrl } from 'src/common/utils/fetchImageUrl';
+import { IUser } from 'src/common/intefaces/user.interface';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
@@ -57,7 +61,10 @@ export class UserController {
 		private readonly emailService: EmailHandlerService,
 	) {}
 
-	@Post('register')
+	/**
+	 * Register user
+	 */
+	@Post('')
 	@ApiOperation({ description: apiDescriptions.REGISTER_API })
 	@ApiResponse({
 		status: HttpStatus.OK,
@@ -67,8 +74,22 @@ export class UserController {
 		status: HttpStatus.BAD_REQUEST,
 		description: statusMessages[HttpStatus.BAD_REQUEST],
 	})
+	@UseInterceptors(
+		AnyFilesInterceptor({
+			storage: diskStorage({
+				destination: './public/uploads',
+				filename: (req, file, cb) => {
+					const ext = file.originalname.split('.');
+					req.body.profilePicture = `${req.body.username}.${
+						ext[ext.length - 1]
+					}`;
+					cb(null, `${req.body.username}.${ext[ext.length - 1]}`);
+				},
+			}),
+		}),
+	)
 	@HttpCode(HttpStatus.CREATED)
-	async register(@Body() body: RegisterDto): Promise<Response> {
+	async register(@Body() body: RegisterDto): Promise<IResponse<IUser>> {
 		const { email } = body;
 
 		// check if user exists in the database
@@ -79,11 +100,9 @@ export class UserController {
 		if (userData)
 			throw new BadRequestException(errorMessages.USER_ALREADY_EXISTS);
 
-		// delete old records in case of having same email
-		await this.userService.destroyRecord({ email });
-
 		// create user with provided data
 		body.password = await encryptPassword(body.password);
+
 		const isRegistered = await this.userService.createUser(body);
 		if (!isRegistered)
 			throw new BadRequestException(errorMessages.REGISTERATION_FAILED);
@@ -103,6 +122,9 @@ export class UserController {
 		return createSuccessReponse(messages.REGISTER_SUCCESSFULLY);
 	}
 
+	/**
+	 * Login endpoint
+	 */
 	@Post('login')
 	@ApiOperation({ description: apiDescriptions.LOGIN_API })
 	@ApiResponse({
@@ -117,7 +139,7 @@ export class UserController {
 		status: HttpStatus.BAD_REQUEST,
 		description: statusMessages[HttpStatus.BAD_REQUEST],
 	})
-	async login(@Body() body: LoginDto): Promise<Response> {
+	async login(@Body() body: LoginDto): Promise<IResponse<IUser>> {
 		const { email, password } = body;
 
 		// check if user exists in the database
@@ -140,10 +162,13 @@ export class UserController {
 		});
 	}
 
+	/**
+	 * get profile
+	 */
 	@ApiSecurity('bearer')
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
-	@Get('profile')
+	@Get('')
 	@ApiOperation({ description: apiDescriptions.PROFILE_API })
 	@ApiResponse({
 		status: HttpStatus.OK,
@@ -161,14 +186,22 @@ export class UserController {
 		status: HttpStatus.FORBIDDEN,
 		description: statusMessages[HttpStatus.FORBIDDEN],
 	})
-	async profile(@Req() req: IGetUserAuthInfoRequest): Promise<Response> {
-		return createSuccessReponse(messages.SUCCESS, req.user);
+	async profile(@Req() req: IGetUserAuthInfoRequest): Promise<IResponse<IUser>> {
+		let userData = await this.userService.getUser({
+			username: req.user.username,
+		});
+		userData = userData.toJSON();
+		if (userData.profilePicture)
+			userData.profilePicture = fetchImageUrl(userData.profilePicture);
+		return createSuccessReponse(messages.SUCCESS, userData);
 	}
-
+	/**
+	 * Update profile
+	 */
 	@ApiSecurity('bearer')
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
-	@Put('update')
+	@Put('')
 	@ApiOperation({ description: apiDescriptions.UPDATE_USER_API })
 	@ApiResponse({
 		status: HttpStatus.OK,
@@ -186,14 +219,31 @@ export class UserController {
 		status: HttpStatus.FORBIDDEN,
 		description: statusMessages[HttpStatus.FORBIDDEN],
 	})
+	@UseInterceptors(
+		AnyFilesInterceptor({
+			storage: diskStorage({
+				destination: './public/uploads',
+				filename: (req: IGetUserAuthInfoRequest, file, cb) => {
+					const ext = file.originalname.split('.');
+					req.body.profilePicture = `${req.user.username}.${
+						ext[ext.length - 1]
+					}`;
+					cb(null, `${req.user.username}.${ext[ext.length - 1]}`);
+				},
+			}),
+		}),
+	)
 	async updateProfile(
 		@Body() body: UpdateUserDto,
 		@Req() req: IGetUserAuthInfoRequest,
-	): Promise<Response> {
+	): Promise<IResponse<IUser>> {
 		await this.userService.updateUser({ id: req.user.id }, body);
 		return createSuccessReponse(messages.PROFILE_UPDATED_SUCCESSFULLY);
 	}
 
+	/**
+	 * Change password endpoint
+	 */
 	@ApiSecurity('bearer')
 	@Roles(Role.User)
 	@UseGuards(AuthGuard, RolesGuard)
@@ -214,7 +264,7 @@ export class UserController {
 	async changeProfile(
 		@Body() body: ChangePasswordDto,
 		@Req() req: IGetUserAuthInfoRequest,
-	): Promise<Response> {
+	): Promise<IResponse<IUser>> {
 		// password and newPassword from body.
 		const { password, newPassword } = body;
 

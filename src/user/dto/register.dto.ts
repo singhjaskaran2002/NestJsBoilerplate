@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsString } from 'class-validator';
-import { dtoFieldsDescription, dtoFieldsError } from '../../common/utils/constants';
+import {
+	dtoFieldsDescription,
+	dtoFieldsError,
+} from '../../common/utils/constants';
 
 export class RegisterDto {
 	@ApiProperty({
@@ -9,6 +12,20 @@ export class RegisterDto {
 	})
 	@IsEmail({}, { message: 'Invalid Email' })
 	email: string;
+
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_USERNAME,
+		default: 'abc99',
+	})
+	@IsString({ message: 'Invalid Username' })
+	username: string;
+
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_IMAGE,
+		required: false,
+		readOnly: true,
+	})
+	profilePicture?: string;
 
 	@ApiProperty({
 		description: dtoFieldsDescription.USER_PASSWORD,

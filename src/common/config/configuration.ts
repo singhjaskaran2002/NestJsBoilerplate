@@ -6,6 +6,7 @@ export default () => ({
 		password: process.env.DATABASE_PASSWORD,
 		dialect: process.env.DATABASE_DIALECT,
 		database: process.env.DATABASE_NAME,
+		multer_dest: './uploads',
 	},
 	jwt: {
 		secret: process.env.JWT_SECRET,

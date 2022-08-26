@@ -32,6 +32,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 				...configService.get<any>('database'),
 				sync: {
 					alter: true,
+					logging: false
 				},
 				autoLoadModels: true,
 			}),

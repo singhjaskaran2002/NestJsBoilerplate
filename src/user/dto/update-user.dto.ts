@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import {
 	dtoFieldsDescription,
 	dtoFieldsError,
@@ -9,9 +9,18 @@ export class UpdateUserDto {
 	@ApiProperty({
 		description: dtoFieldsDescription.USER_NAME,
 		default: 'john deo',
+		required: false,
 	})
+	@IsOptional()
 	@IsString({
 		message: dtoFieldsError.INVALID_FIELD_STRING.replace('@field', 'name'),
 	})
-	name: string;
+	name?: string;
+
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_IMAGE,
+		required: false,
+		readOnly: true,
+	})
+	profilePicture?: string;
 }
