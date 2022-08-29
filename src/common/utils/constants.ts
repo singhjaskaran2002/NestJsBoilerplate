@@ -34,8 +34,10 @@ export const dtoFieldsDescription = {
 	USER_NAME: "User's name.",
 	USER_PASSWORD: "User's password.",
 	USER_EMAIL: "User's email.",
-	USER_CURRENT_PASSWORD: "User's current password.",
-	USER_NEW_PASSWORD: "User's new password.",
+	USER_USERNAME: "User's unique usename.",
+	USER_IMAGE: "User's profile picture.",
+	USER_NEW_PASSWORD: "User's new password",
+	USER_CURRENT_PASSWORD: "User's current passsword"
 };
 
 export const dtoFieldsError = {

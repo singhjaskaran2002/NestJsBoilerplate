@@ -21,6 +21,20 @@ export class RegisterDto {
 	email: string;
 
 	@ApiProperty({
+		description: dtoFieldsDescription.USER_USERNAME,
+		default: 'abc99',
+	})
+	@IsString({ message: 'Invalid Username' })
+	username: string;
+
+	@ApiProperty({
+		description: dtoFieldsDescription.USER_IMAGE,
+		required: false,
+		readOnly: true,
+	})
+	profilePicture?: string;
+
+	@ApiProperty({
 		description: dtoFieldsDescription.USER_PASSWORD,
 		default: '123456',
 	})
