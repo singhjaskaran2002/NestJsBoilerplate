@@ -5,44 +5,45 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
-	NotFoundException,
-	Post,
+	NotFoundException, Post,
 	Put,
+	Query,
 	Req,
 	UseGuards,
-	UseInterceptors,
+	UseInterceptors
 } from '@nestjs/common';
 import {
 	ApiOperation,
 	ApiResponse,
 	ApiSecurity,
-	ApiTags,
+	ApiTags
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from 'src/common/enums/roles.enum';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { JwtConfigService } from '../jwt-config/jwt-config.service';
-import { AuthGuard } from '../auth/auth.guard';
-import { checkHash, encryptPassword } from '../common/helpers/bcrypt.helper';
-import {
-	messages,
-	apiDescriptions,
-	errorMessages,
-	apiSecurities,
-} from '../common/utils/constants';
-import { statusMessages } from '../common/utils/httpStatuses';
-import { createSuccessReponse } from '../common/helpers/response.helper';
-import { Response } from '../common/intefaces/response.interface';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
-import { User } from '../models/user.entity';
-import { UserService } from './user.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { LoggingInterceptor } from 'src/common/interceptor/logging.interceptor';
 import { EmailHandlerService } from 'src/email-handler/email-handler.service';
 import { mailSubjects, mailTypes } from 'src/email-handler/templatesIndex';
-import { LoggingInterceptor } from 'src/common/interceptor/logging.interceptor';
+import { AuthGuard } from '../auth/auth.guard';
+import { checkHash, encryptPassword } from '../common/helpers/bcrypt.helper';
+import { createSuccessReponse } from '../common/helpers/response.helper';
+import { Response } from '../common/intefaces/response.interface';
+import {
+	apiDescriptions,
+	apiSecurities,
+	errorMessages,
+	messages
+} from '../common/utils/constants';
+import { statusMessages } from '../common/utils/httpStatuses';
+import { JwtConfigService } from '../jwt-config/jwt-config.service';
+import { User } from '../models/user.entity';
+import { defaultExcludedAttributes } from './../common/utils/constants';
+import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserService } from './user.service';
 
 export interface IGetUserAuthInfoRequest extends Request {
 	user: User;
@@ -164,6 +165,46 @@ export class UserController {
 	})
 	async profile(@Req() req: IGetUserAuthInfoRequest): Promise<Response> {
 		return createSuccessReponse(messages.SUCCESS, req.user);
+	}
+
+	// @ApiSecurity(apiSecurities.BEARER)
+	// @Roles(Role.User)
+	// @UseGuards(AuthGuard, RolesGuard)
+	@Get('')
+	@ApiOperation({ description: apiDescriptions.LIST_USER_API })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: statusMessages[HttpStatus.OK],
+	})
+	@ApiResponse({
+		status: HttpStatus.NOT_FOUND,
+		description: statusMessages[HttpStatus.NOT_FOUND],
+	})
+	@ApiResponse({
+		status: HttpStatus.BAD_REQUEST,
+		description: statusMessages[HttpStatus.BAD_REQUEST],
+	})
+	@ApiResponse({
+		status: HttpStatus.FORBIDDEN,
+		description: statusMessages[HttpStatus.FORBIDDEN],
+	})
+	async listUsers(
+		@Query('page') page: string,
+		@Query('limit') limit: string,
+		@Query('sortKey') sortKey: string,
+		@Query('sortDirection') sortDirection: 'ASC' | 'DESC',
+	): Promise<Response> {
+		const usersList = await this.userService.getUserList(
+			+page - 1,
+			+limit,
+			sortKey,
+			sortDirection,
+			null,
+			{
+				exclude: defaultExcludedAttributes,
+			},
+		);
+		return createSuccessReponse(messages.SUCCESS, usersList);
 	}
 
 	@ApiSecurity(apiSecurities.BEARER)

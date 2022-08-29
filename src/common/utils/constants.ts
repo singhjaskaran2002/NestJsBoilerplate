@@ -12,6 +12,7 @@ export const apiDescriptions = {
 	REGISTER_API: 'Route for registering into the system.',
 	PROFILE_API: "Route for fetching logged user's profile from the system.",
 	UPDATE_USER_API: "Route for updating user's profile.",
+	LIST_USER_API: "Route for listing users.",
 	CHANGE_PASSWORD_API: "Route for changing user's password.",
 };
 

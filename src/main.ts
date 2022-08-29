@@ -1,17 +1,19 @@
 import {
 	BadRequestException,
 	ValidationError,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/exception.filter';
-import { UserModule } from './user/user.module';
 import { serverEnvironments } from './common/utils/constants';
+import { UserModule } from './user/user.module';
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create(AppModule, { httpsOptions: {}, cors: true });
+
 	app.useGlobalPipes(
 		new ValidationPipe({
 			exceptionFactory: (validationErrors: ValidationError[] = []) => {
@@ -23,6 +25,9 @@ async function bootstrap() {
 			},
 		}),
 	);
+
+	app.use(json({ limit: '1mb' }));
+	app.use(urlencoded({ limit: '50mb', extended: true }));
 
 	app.useGlobalFilters(new HttpExceptionFilter());
 

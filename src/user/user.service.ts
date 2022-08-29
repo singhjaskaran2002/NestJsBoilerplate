@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { FindAttributeOptions, WhereOptions } from 'sequelize/types';
 import { checkHash } from '../common/helpers/bcrypt.helper';
+import { User } from '../models/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from '../models/user.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +18,25 @@ export class UserService {
 		return await this.userModel.findOne({
 			where: criteria,
 			...(attributes && { attributes }),
+		});
+	}
+
+	// get users list
+	async getUserList(
+		page: number,
+		limit: number,
+		sortKey: string,
+		sortDirection: string,
+		criteria?: WhereOptions,
+		attributes?: FindAttributeOptions,
+	): Promise<{ count: number; rows: User[] }> {
+		const offset = page * limit;
+		return await this.userModel.findAndCountAll({
+			where: criteria,
+			...(attributes && { attributes }),
+			offset,
+			limit,
+			order: [[sortKey, sortDirection]],
 		});
 	}
 
